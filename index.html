@@ -25,10 +25,11 @@
 
     <canvas id="mazeCanvas" width="640" height="640"></canvas>
 
-    <div id="questionBox">
+    <div id="questionBox" class="justify-content-center">
         <p id="questionText"></p>
         <input type="text" id="answerInput" placeholder="Sua resposta">
         <button onclick="checkAnswer()">Enviar</button>
+        <a href="#" onclick="giveUpQuestion(); return false;">Desistir</a>
     </div>
 
     <!-- Controles de setas -->

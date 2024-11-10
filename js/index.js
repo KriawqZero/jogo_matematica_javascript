@@ -1,6 +1,6 @@
 /* Constantes de tamanho definido */
 import { player, maze, questions } from './consts.js'; 
-import { checkIfWinOrQuestion } from './helperFunctions.js';
+import { checkIfWinOrQuestion, checkAnswer, giveUpQuestion } from './helperFunctions.js';
 /* ------------- *///* ------------- */
 /* Usada em outros scripts pra liberar ou prender o jogador */
 export function setPlayerRelease(released) { released ? player.released = true : player.released = false; } 
@@ -147,26 +147,6 @@ function drawMaze() {
 }
 
 /**
- * Função para verificar se a resposta do jogador está correta.
- */
-function checkAnswer() {
-    let answer = document.getElementById('answerInput').value.trim(); // Obtém a resposta do jogador
-    if (answer.includes(',')) answer = answer.replace(',', '.'); // Substitui vírgula por ponto
-
-    if (answer === questions[currentQuestionIndex].answer) {
-        maze[player.y][player.x] = 0; // Marca o local como vazio
-        document.getElementById('answerInput').value = ''; // Limpa o campo de resposta
-        document.getElementById('questionBox').style.display = 'none'; // Oculta a caixa de pergunta
-        drawMaze(); // Redesenha o labirinto
-        currentQuestionIndex = null; // Reseta o índice da pergunta
-        player.released = true; // Libera o jogador para se mover
-    } else {
-        alert("Resposta incorreta. Tente novamente.");
-        player.released = false; // Impede o movimento até a próxima tentativa
-    }
-}
-
-/**
  * Função que move o jogador pelas células do labirinto.
  * dx - Deslocamento horizontal (1 ou -1).
  * dy - Deslocamento vertical (1 ou -1).
@@ -201,7 +181,9 @@ document.addEventListener('keydown', (event) => {
     switch (event.key) {
         case 'Enter':
             if (document.getElementById('startMenu').style.display != 'none') startGame();
-            else if (document.getElementById('questionBox').style.display != 'none') checkAnswer();
+            else if (document.getElementById('questionBox').style.display != 'none') {
+                checkAnswer(questions, currentQuestionIndex, maze); 
+            }
             else break;
         case 'ArrowUp':
         case 'w':
@@ -228,3 +210,4 @@ drawMaze(); // Chama a função para desenhar o labirinto inicial
 window.movePlayer = movePlayer;
 window.startGame = startGame;
 window.checkAnswer = checkAnswer;
+window.giveUpQuestion = giveUpQuestion;

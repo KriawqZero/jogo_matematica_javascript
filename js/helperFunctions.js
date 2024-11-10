@@ -1,34 +1,55 @@
 import { getPlayerRelease, setPlayerRelease, setCurrentQuestionIndex } from "./index.js";
-/**
- * Função que obtém um índice de uma pergunta não utilizada.
- * Se todas as perguntas foram usadas, reinicia o status de 'usado' para todas.
- */
-function getUnusedQuestionIndex(questions) {
-    let unusedQuestions = questions.filter(q => !q.used); // Filtra as perguntas não utilizadas
 
-    if (unusedQuestions.length === 0) {
-        questions.forEach(q => q.used = false); // Reinicia todas as perguntas
-        unusedQuestions = questions;
-    }
-
-    const randomIndex = Math.floor(Math.random() * unusedQuestions.length); // Seleciona uma pergunta aleatória
-    const questionIndex = questions.indexOf(unusedQuestions[randomIndex]);
-
-    questions[questionIndex].used = true; // Marca a pergunta como 'usada'
-
-    return questionIndex; // Retorna o índice da pergunta
-}
 /**
  * Função que exibe a pergunta ao jogador.
  * index - Índice da pergunta a ser exibida.
  * usada por checkIfWinOrQuestion em helperFunctions.js
+ * Se todas as perguntas foram usadas, reinicia o status de 'usado' para todas.
  */
-function showQuestion(index, questions) {
+function showQuestion(questions) {
+    /* Pegar índice de questão nao utilizada */
+    let unusedQuestions = questions.filter(q => !q.used); // Filtra as perguntas não utilizadas
+    if (unusedQuestions.length === 0) {
+        questions.forEach(q => q.used = false); // Reinicia todas as perguntas
+        unusedQuestions = questions;
+    }
+    /* ----------- *///* ----------- */
+
+    const randomIndex = Math.floor(Math.random() * unusedQuestions.length); // Seleciona uma pergunta aleatória
+    const index = questions.indexOf(unusedQuestions[randomIndex]);
+
     setPlayerRelease(false); // Impede o jogador de se mover enquanto responde
     setCurrentQuestionIndex(index); // Define a pergunta atual
+    document.body.classList.add('modal-open'); //Desabilita movimento no scroll
     document.getElementById('questionText').innerText = questions[index].text; // Exibe a pergunta
     document.getElementById('questionBox').style.display = 'block'; // Exibe a caixa de pergunta
+    document.getElementById('blur-background').style.display = 'block';
 }
+
+/**
+ * Função para verificar se a resposta do jogador está correta.
+ */
+export function checkAnswer(questions, currentQuestionIndex, maze) {
+    let answer = document.getElementById('answerInput').value.trim(); // Obtém a resposta do jogador
+    if (answer.includes(',')) answer = answer.replace(',', '.'); // Substitui vírgula por ponto
+
+    if (answer === questions[currentQuestionIndex].answer) {
+        maze[player.y][player.x] = 0; // Marca o local como vazio
+        document.getElementById('answerInput').value = ''; // Limpa o campo de resposta
+        document.body.classList.remove('modal-open'); // Reabilita movimento no scroll
+        document.getElementById('questionBox').style.display = 'none'; // Oculta a caixa de pergunta
+        document.getElementById('blur-background').style.display = 'none';
+        drawMaze(); // Redesenha o labirinto
+        setCurrentQuestionIndex(null); // Reseta o índice da pergunta
+        setPlayerRelease(true); // Libera o jogador para se mover
+        
+        questions[currentQuestionIndex].used = true; // Marca a pergunta como 'usada'
+    } else {
+        alert("Resposta incorreta. Tente novamente.");
+        setPlayerRelease(false); // Impede o movimento até a próxima tentativa
+    }
+}
+
 /**
  * Função que verifica se o jogador venceu ou encontrou uma questão.
 */
@@ -39,8 +60,11 @@ export function checkIfWinOrQuestion(maze, pY, pX, questions) {
         return true;
     }
     if (maze[pY][pX] === 2) {
-        showQuestion(getUnusedQuestionIndex(questions), questions); // Mostra a próxima pergunta
+        showQuestion(questions); // Mostra a próxima pergunta
         return true;
     } else return false;
 }
 
+export function giveUpQuestion() {
+
+}
