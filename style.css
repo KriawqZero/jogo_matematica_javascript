@@ -1,0 +1,179 @@
+body.modal-open {
+    overflow: hidden;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f5;
+    height: 100vh;
+    margin: 0;
+}
+
+canvas {
+    height: 40vh;
+    width: 40vh;
+    border: 3px solid #333;
+    background-color: #eee;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+}
+
+#questionBox {
+    position: fixed;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    display: none;
+    z-index: 1000;
+    
+    margin-top: 10px;
+    padding: 15px;
+    width: 300px;
+    border: 2px solid #333;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#questionText {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+#answerInput {
+    width: calc(100% - 22px);
+    padding: 8px;
+    font-size: 16px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    z-index: 1000;
+}
+
+#answerInput:focus {
+    border-color: #007bff;
+}
+
+button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#placeholder {
+    min-height: 80px;
+    min-width: 100px;
+}
+
+/* Estilo do Menu Inicial */
+#startMenu {
+    position: fixed;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 300px;
+    padding: 20px;
+    background-color: #3B9E4D;
+    /* Verde do IFMS */
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+    color: #fff;
+    text-align: center;
+    z-index: 1000;
+    
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#startMenu input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+#startMenu button {
+    background-color: #005D36;
+    /* Verde mais escuro para contraste */
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#startMenu button:hover {
+    background-color: #004A2A;
+}
+
+/* Fundo borrado */
+.blur-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(8px);
+    /* Define o borrão do fundo */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Sombra escura para o efeito de overlay */
+    z-index: 999;
+    /* Posição acima do conteúdo */
+}
+
+/* Ajustes para a área dos controles */
+#controls {
+    width: 100%;
+    max-width: 640px;  /* Garante que o tamanho máximo não ultrapasse o do canvas */
+    margin-top: 20px;
+}
+
+.control-row {
+    margin: 5px 0;
+}
+
+.control-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+.control-btn:hover {
+    background-color: #0056b3;
+}
+
+@media (max-width: 576px) {
+    .control-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 18px;
+    }
+}
