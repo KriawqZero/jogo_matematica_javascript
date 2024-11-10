@@ -1,4 +1,15 @@
-import { getPlayerRelease, setPlayerRelease, setCurrentQuestionIndex } from "./index.js";
+/**
+ * Código do jogo escrito por Marcilio Ortiz
+ * no grupo de trabalho escolar de Geometria Plana 
+ * de Matemática 5 com a professora Mariana Manfroi.
+ * Turma: 20210 - 5º Semestre
+ * Alunos: Marcilio Ortiz - Desenvolvedor do script do jogo
+ * Davi - Design das imagens e da parte gráfica do jogo
+ * Luiza Mabel - Designer das regras e panfletagem
+ * Maria Clara - Fez e analisou todas as questões e respostas das questões
+ */
+
+import { movePlayer, setPlayerRelease, setCurrentQuestionIndex, player, drawMaze } from "./main.js";
 
 /**
  * Função que exibe a pergunta ao jogador.
@@ -66,5 +77,14 @@ export function checkIfWinOrQuestion(maze, pY, pX, questions) {
 }
 
 export function giveUpQuestion() {
+    player.x = player.oldX;
+    player.y = player.oldY;
+    document.getElementById('answerInput').value = ''; // Limpa o campo de resposta
+    document.body.classList.remove('modal-open'); // Reabilita movimento no scroll
+    document.getElementById('questionBox').style.display = 'none'; // Oculta a caixa de pergunta
+    document.getElementById('blur-background').style.display = 'none';
+    setCurrentQuestionIndex(null); // Reseta o índice da pergunta
+    setPlayerRelease(true); // Libera o jogador para se mover
+    drawMaze(); // Redesenha o labirinto
 
 }

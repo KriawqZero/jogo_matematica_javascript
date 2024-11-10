@@ -1,3 +1,14 @@
+/**
+ * Código do jogo escrito por Marcilio Ortiz
+ * no grupo de trabalho escolar de Geometria Plana 
+ * de Matemática 5 com a professora Mariana Manfroi.
+ * Turma: 20210 - 5º Semestre
+ * Alunos: Marcilio Ortiz - Desenvolvedor do script do jogo
+ * Davi - Design das imagens e da parte gráfica do jogo
+ * Luiza Mabel - Designer das regras e panfletagem
+ * Maria Clara - Fez e analisou todas as questões e respostas das questões
+ */
+
 export let player = { 
     x: 0, y: 0, 
     oldX: 0, oldY: 0, 

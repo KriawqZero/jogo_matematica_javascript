@@ -1,11 +1,22 @@
+/**
+ * Código do jogo escrito por Marcilio Ortiz
+ * no grupo de trabalho escolar de Geometria Plana 
+ * de Matemática 5 com a professora Mariana Manfroi.
+ * Turma: 20210 - 5º Semestre
+ * Alunos: Marcilio Ortiz - Desenvolvedor do script do jogo
+ * Davi - Design das imagens e da parte gráfica do jogo
+ * Luiza Mabel - Designer das regras e panfletagem
+ * Maria Clara - Fez e analisou todas as questões e respostas das questões
+ */
+
 /* Constantes de tamanho definido */
 import { player, maze, questions } from './consts.js'; 
 import { checkIfWinOrQuestion, checkAnswer, giveUpQuestion } from './helperFunctions.js';
 /* ------------- *///* ------------- */
-/* Usada em outros scripts pra liberar ou prender o jogador */
-export function setPlayerRelease(released) { released ? player.released = true : player.released = false; } 
-export function getPlayerRelease() { return player.released; } 
+/* Usada em outros scripts */
+export function setPlayerRelease(released) { released ? player.released = true : player.released = false; }
 export function setCurrentQuestionIndex(val) { currentQuestionIndex = val }
+export { movePlayer, player, drawMaze };
 /* ------------- *///* ------------- */
 // Obtém o contexto do canvas para desenhar o labirinto
 const canvas = document.getElementById('mazeCanvas');
@@ -13,8 +24,9 @@ const ctx = canvas.getContext('2d');
 const cellSize = 40; // Tamanho de cada célula do labirinto (40px)
 const transitionSpeed = 0.1; // Ajusta a velocidade para suavidade na transição de movimento
 
-/* ------ Cores ------ */
-/* Define as cores utilizadas para diferentes elementos no labirinto */
+/**  ------ Cores ------ 
+ * Define as cores utilizadas para diferentes elementos no labirinto 
+ */
 const wallColor = '#333'; // Cor das paredes
 const questionBoxColor = '#ffd700'; // Cor das caixas de pergunta
 const winBoxColor = '#8fce00'; // Cor da caixa de vitória
@@ -91,6 +103,7 @@ let currentY = player.y;
  * Função responsável por desenhar o labirinto.
  */
 function drawMaze() {
+    console.log('drawMaze called');
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpa o canvas
 
     // Loop para percorrer cada célula do labirinto e desenhá-la
@@ -206,8 +219,12 @@ document.addEventListener('keydown', (event) => {
 
 
 drawMaze(); // Chama a função para desenhar o labirinto inicial
-// Expõe funções globais para uso em outros scripts
+
+/** 
+ * Expõe funções globais para uso em outros scripts
+ */
 window.movePlayer = movePlayer;
 window.startGame = startGame;
 window.checkAnswer = checkAnswer;
 window.giveUpQuestion = giveUpQuestion;
+/* ------- *///* ------- */
