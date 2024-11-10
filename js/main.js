@@ -4,7 +4,7 @@
  * de Matemática 5 com a professora Mariana Manfroi.
  * Turma: 20210 - 5º Semestre
  * Alunos: Marcilio Ortiz - Desenvolvedor do script do jogo
- * Davi - Design das imagens e da parte gráfica do jogo
+ * Davi - Design das imagens e da parte gráfica do jogo, também fez os labirintos
  * Luiza Mabel - Designer das regras e panfletagem
  * Maria Clara - Fez e analisou todas as questões e respostas das questões
  */
@@ -130,7 +130,7 @@ function drawMaze() {
                 // Transição suave com desfoque para as áreas fora de vista
                 const blurLevel = Math.min(8, 2 * (distanceFromPlayer - player.viewDistance));
                 ctx.filter = `blur(${blurLevel}px)`;
-                ctx.fillStyle = '#333'; // Cor da área borrada
+                ctx.fillStyle = wallColor; // Cor da área borrada
                 ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
             } else {
                 // Área totalmente fora da visão
@@ -167,7 +167,6 @@ function drawMaze() {
 function movePlayer(dx, dy) {
     let newX = player.x + dx;
     let newY = player.y + dy;
-
     // Verifica se o movimento é válido (dentro dos limites do labirinto e sem colidir com uma parede)
     if (newX >= 0 &&
     newY >= 0 &&
@@ -176,8 +175,8 @@ function movePlayer(dx, dy) {
     maze[newY][newX] !== 1 && // Não permite mover em paredes
     player.released
     ) {
-        player.oldX = player.x;
-        player.oldY = player.y;
+        player.oldX = -dx;
+        player.oldY = -dy;
         targetX = newX;
         targetY = newY;
         player.x = newX;

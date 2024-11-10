@@ -4,10 +4,11 @@
  * de Matemática 5 com a professora Mariana Manfroi.
  * Turma: 20210 - 5º Semestre
  * Alunos: Marcilio Ortiz - Desenvolvedor do script do jogo
- * Davi - Design das imagens e da parte gráfica do jogo
+ * Davi - Design das imagens e da parte gráfica do jogo, também fez os labirintos
  * Luiza Mabel - Designer das regras e panfletagem
  * Maria Clara - Fez e analisou todas as questões e respostas das questões
  */
+
 
 import { movePlayer, setPlayerRelease, setCurrentQuestionIndex, player, drawMaze } from "./main.js";
 
@@ -77,14 +78,12 @@ export function checkIfWinOrQuestion(maze, pY, pX, questions) {
 }
 
 export function giveUpQuestion() {
-    player.x = player.oldX;
-    player.y = player.oldY;
     document.getElementById('answerInput').value = ''; // Limpa o campo de resposta
     document.body.classList.remove('modal-open'); // Reabilita movimento no scroll
     document.getElementById('questionBox').style.display = 'none'; // Oculta a caixa de pergunta
     document.getElementById('blur-background').style.display = 'none';
     setCurrentQuestionIndex(null); // Reseta o índice da pergunta
     setPlayerRelease(true); // Libera o jogador para se mover
-    drawMaze(); // Redesenha o labirinto
+    movePlayer(player.oldX, player.oldY);
 
 }

@@ -4,7 +4,7 @@
  * de Matemática 5 com a professora Mariana Manfroi.
  * Turma: 20210 - 5º Semestre
  * Alunos: Marcilio Ortiz - Desenvolvedor do script do jogo
- * Davi - Design das imagens e da parte gráfica do jogo
+ * Davi - Design das imagens e da parte gráfica do jogo, também fez os labirintos
  * Luiza Mabel - Designer das regras e panfletagem
  * Maria Clara - Fez e analisou todas as questões e respostas das questões
  */
