@@ -10,24 +10,26 @@
  */
 
 /* Constantes de tamanho definido */
-import { player, maze, questions } from './consts.js'; 
+import { player, maze } from './consts.js'; 
 import { checkIfWinOrQuestion, checkAnswer, giveUpQuestion } from './helperFunctions.js';
 /* ------------- *///* ------------- */
 /* Usada em outros scripts */
 export function setPlayerRelease(released) { released ? player.released = true : player.released = false; }
 export function setCurrentQuestionIndex(val) { currentQuestionIndex = val }
-export { movePlayer, player, drawMaze };
+export { movePlayer, player, drawMaze, maze, timerID };
 /* ------------- *///* ------------- */
 // Obtém o contexto do canvas para desenhar o labirinto
 const canvas = document.getElementById('mazeCanvas');
 const ctx = canvas.getContext('2d');
-const cellSize = 40; // Tamanho de cada célula do labirinto (40px)
 const transitionSpeed = 0.1; // Ajusta a velocidade para suavidade na transição de movimento
 
 /**  ------ Cores ------ 
  * Define as cores utilizadas para diferentes elementos no labirinto 
  */
-const wallColor = '#333'; // Cor das paredes
+const pathColor = '#cef5e3';
+const offViewColor = '#000';
+const blurColor = '#111'
+const wallColor = '#293630'; // Cor das paredes
 const questionBoxColor = '#ffd700'; // Cor das caixas de pergunta
 const winBoxColor = '#8fce00'; // Cor da caixa de vitória
 const playerColor = '#007bff'; // Cor do jogador
@@ -35,7 +37,6 @@ const playerColor = '#007bff'; // Cor do jogador
 
 // Variáveis do timer
 var timerID = null; // ID do timer, usado para limpar o intervalo
-var timerRunning = null; // Status do timer (se está rodando ou não)
 let currentQuestionIndex = null; // Índice da pergunta atual (inicialmente não há pergunta)
 
 window.onload = () => {
@@ -90,9 +91,6 @@ function startTimer(display) {
     timerID = setInterval(timer, 1000);
 }
 
-function stopTimer() {
-    clearInterval(timerID); // Para o timer
-}
 
 // Variáveis para o movimento do jogador
 let targetX = player.x; 
@@ -102,8 +100,13 @@ let currentY = player.y;
 /**
  * Função responsável por desenhar o labirinto.
  */
+let distanceFromPlayer;
 function drawMaze() {
-    console.log('drawMaze called');
+    // Ajusta o tamanho das células com base no tamanho do labirinto e do canvas
+    const rows = maze.length;
+    const cols = maze[0].length;
+    const cellSize = Math.min(canvas.width / cols, canvas.height / rows);
+
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpa o canvas
 
     // Loop para percorrer cada célula do labirinto e desenhá-la
@@ -112,30 +115,25 @@ function drawMaze() {
             // Calcula a distância do jogador para a célula
             let distanceX = Math.abs(targetX - j);
             let distanceY = Math.abs(targetY - i);
-            let distanceFromPlayer = Math.sqrt(distanceX ** 2 + distanceY ** 2);
+            distanceFromPlayer = Math.sqrt(distanceX ** 2 + distanceY ** 2);
 
             // Desenha as células dentro do alcance de visão do jogador
             if (distanceFromPlayer <= player.viewDistance) {
-                if (maze[i][j] === 1) {
-                    ctx.fillStyle = wallColor; // Paredes
-                } else if (maze[i][j] === 2) {
-                    ctx.fillStyle = questionBoxColor; // Caixa de pergunta
-                } else if (maze[i][j] === 4) {
-                    ctx.fillStyle = winBoxColor; // Caixa de vitória
-                } else {
-                    ctx.fillStyle = '#eee'; // Caminho visível
-                }
+                ctx.fillStyle = maze[i][j] === 1 ? wallColor :
+                                maze[i][j] === 2 ? questionBoxColor :
+                                maze[i][j] === 4 ? winBoxColor : pathColor;
+
                 ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize); // Desenha a célula
-            } else if (distanceFromPlayer <= player.viewDistance + 2) {
+            } else if (distanceFromPlayer <= player.viewDistance + 1) {
                 // Transição suave com desfoque para as áreas fora de vista
                 const blurLevel = Math.min(8, 2 * (distanceFromPlayer - player.viewDistance));
-                ctx.filter = `blur(${blurLevel}px)`;
-                ctx.fillStyle = wallColor; // Cor da área borrada
+                //ctx.filter = `blur(${blurLevel}px)`;
+                ctx.fillStyle = blurColor; // Cor da área borrada
                 ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
             } else {
                 // Área totalmente fora da visão
-                ctx.filter = 'blur(12px)';
-                ctx.fillStyle = '#222'; // Cor da área escura
+                //ctx.filter = 'blur(12px)';
+                ctx.fillStyle = offViewColor; // Cor da área escura
                 ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
             }
             ctx.filter = 'none'; // Reset do filtro de desfoque para a próxima célula
@@ -182,7 +180,7 @@ function movePlayer(dx, dy) {
         player.x = newX;
         player.y = newY;
 
-        if (checkIfWinOrQuestion(maze, player.y, player.x, questions)) player.released = false; // Verifica vitória ou questão
+        checkIfWinOrQuestion(player.y, player.x); // Verifica vitória ou questão
 
         drawMaze(); // Redesenha o labirinto com o novo movimento
     }
@@ -194,7 +192,7 @@ document.addEventListener('keydown', (event) => {
         case 'Enter':
             if (document.getElementById('startMenu').style.display != 'none') startGame();
             else if (document.getElementById('questionBox').style.display != 'none') {
-                checkAnswer(questions, currentQuestionIndex, maze); 
+                checkAnswer(); 
             }
             else break;
         case 'ArrowUp':

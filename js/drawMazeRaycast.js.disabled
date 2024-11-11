@@ -1,0 +1,76 @@
+
+let distanceFromPlayer;function drawMaze() {
+    const rows = maze.length;
+    const cols = maze[0].length;
+    const cellSize = Math.min(canvas.width / cols, canvas.height / rows);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Função auxiliar para desenhar uma célula
+    function drawCell(i, j, color, blur = 0) {
+        ctx.filter = blur ? `blur(${blur}px)` : 'none';
+        ctx.fillStyle = color;
+        ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+    }
+
+    // Função que verifica se uma célula está dentro dos limites do labirinto
+    function inBounds(i, j) {
+        return i >= 0 && i < rows && j >= 0 && j < cols;
+    }
+
+    // Raycasting para bloquear a visão do jogador através das paredes
+    function castRay(startX, startY, angle, viewDistance) {
+        let x = startX;
+        let y = startY;
+
+        for (let dist = 0; dist <= viewDistance; dist += 0.5) {
+            // Avança na direção do ângulo
+            let rayX = Math.floor(startX + dist * Math.cos(angle));
+            let rayY = Math.floor(startY + dist * Math.sin(angle));
+
+            if (!inBounds(rayY, rayX)) break; // Sai do loop se estiver fora dos limites
+
+            // Verifica a célula na direção do raio
+            let cellValue = maze[rayY][rayX];
+            let blurLevel = Math.max(0, 8 * (dist / viewDistance - 1)); // Desfoque baseado na distância
+
+            if (dist <= player.viewDistance) {
+                // Define a cor baseada no tipo da célula
+                let color = cellValue === 1 ? wallColor :
+                            cellValue === 2 ? questionBoxColor :
+                            cellValue === 4 ? winBoxColor : pathColor;
+
+                drawCell(rayY, rayX, color, blurLevel); // Desenha a célula com possível desfoque
+
+                if (cellValue != 0) break; // Interrompe o raio ao atingir uma parede
+            } else {
+                // Desenha o efeito "fora de vista" após o alcance de visão
+                drawCell(rayY, rayX, '#333', 8);
+            }
+        }
+    }
+
+    // Lança vários raios em diferentes direções a partir do jogador
+    const numRays = 15; // Número de raios para cobrir o campo de visão
+    const angleStep = (2 * Math.PI) / numRays;
+
+    for (let a = 0; a < 2 * Math.PI; a += angleStep) {
+        castRay(targetX, targetY, a, player.viewDistance);
+    }
+
+    // Interpolação suave para o movimento do personagem
+    currentX += (targetX - currentX) * transitionSpeed;
+    currentY += (targetY - currentY) * transitionSpeed;
+
+    // Desenha o jogador no labirinto
+    ctx.fillStyle = playerColor;
+    ctx.beginPath();
+    ctx.arc(
+        currentX * cellSize + cellSize / 2,
+        currentY * cellSize + cellSize / 2,
+        cellSize / 3, 0, 2 * Math.PI
+    );
+    ctx.fill();
+
+    requestAnimationFrame(drawMaze);
+}
