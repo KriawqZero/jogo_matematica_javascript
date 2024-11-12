@@ -1,6 +1,6 @@
 /**
  * Código do jogo escrito por Marcilio Ortiz
- * no grupo de trabalho escolar de Geometria Plana 
+ * no grupo de trabalho escolar de Geometria Plana
  * de Matemática 5 com a professora Mariana Manfroi.
  * Turma: 20210 - 5º Semestre
  * Alunos: Marcilio Ortiz - Desenvolvedor do script do jogo
@@ -9,106 +9,76 @@
  * Maria Clara - Fez e analisou todas as questões e respostas das questões
  */
 
-/* Constantes de tamanho definido */
-import { player, maze } from './consts.js'; 
+/* Importações de constantes e funções auxiliares */
+import { player, maze } from './consts.js';
 import { checkIfWinOrQuestion, checkAnswer, giveUpQuestion } from './helperFunctions.js';
-/* ------------- *///* ------------- */
-/* Usada em outros scripts */
-export function setPlayerRelease(released) { released ? player.released = true : player.released = false; }
-export function setCurrentQuestionIndex(val) { currentQuestionIndex = val }
-export { movePlayer, player, drawMaze, maze, timerID };
-/* ------------- *///* ------------- */
-// Obtém o contexto do canvas para desenhar o labirinto
-const canvas = document.getElementById('mazeCanvas');
-const ctx = canvas.getContext('2d');
-const transitionSpeed = 0.1; // Ajusta a velocidade para suavidade na transição de movimento
+import {
+    canvas, ctx, transitionSpeed, pathColor, offViewColor, blurColor, wallColor,
+    questionBoxColor, winBoxColor, playerColor, timerID, targetX, targetY, currentX, currentY, distanceFromPlayer
+} from './vars.js';
 
-/**  ------ Cores ------ 
- * Define as cores utilizadas para diferentes elementos no labirinto 
+/**
+ * Exporta funções e variáveis para uso em outros scripts
  */
-const pathColor = '#cef5e3';
-const offViewColor = '#000';
-const blurColor = '#111'
-const wallColor = '#293630'; // Cor das paredes
-const questionBoxColor = '#ffd700'; // Cor das caixas de pergunta
-const winBoxColor = '#8fce00'; // Cor da caixa de vitória
-const playerColor = '#007bff'; // Cor do jogador
-/* ------ *///* ------ */
+export function setPlayerRelease(released) {
+    released ? player.released = true : player.released = false;
+} export { movePlayer, player, drawMaze, maze, timerID };
 
-// Variáveis do timer
-var timerID = null; // ID do timer, usado para limpar o intervalo
-let currentQuestionIndex = null; // Índice da pergunta atual (inicialmente não há pergunta)
 
+// Carregamento da página inicial
 window.onload = () => {
     // Bloqueia a movimentação da tela até o início do jogo
     document.body.classList.add('modal-open');
 };
 
 /**
- * Função que inicia o jogo. Ela configura o nome do jogador e chama a função de timer.
+ * Função que inicia o jogo.
+ * Ela configura o nome do jogador e chama a função de timer.
  */
 function startGame() {
     document.body.classList.remove('modal-open'); // Reabilita movimentação de tela
-
     player.name = document.getElementById('playerName').value.trim(); // Obtém o nome do jogador
     if (player.name === '') {
         alert('Por favor, insira seu nome.');
         return;
     }
-
     // Oculta o menu de início e a camada de fundo desfocada
     document.getElementById('startMenu').style.display = 'none';
     document.getElementById('blur-background').style.display = 'none';
-
     player.released = true; // Marca o jogador como pronto para movimentação
     startTimer(document.querySelector('#winBox')); // Inicia o timer de 5 minutos
     drawMaze(); // Desenha o labirinto inicial
 }
 
 /**
- * Inicia o timer que conta o tempo restante.
- * duration - Duração total do timer (em segundos).
- * display - Elemento onde o tempo será exibido.
+ * Função que inicia o timer para contar o tempo restante.
+ * @param {HTMLElement} display - Elemento onde o tempo será exibido.
  */
 function startTimer(display) {
-    var start = Date.now(); // Marca o momento de início do cronômetro
-    var minutes, seconds, diff;
-
+    const start = Date.now(); // Marca o momento de início do cronômetro
     function timer() {
-        diff = ((Date.now() - start) / 1000) | 0; // Calcula o tempo decorrido em segundos
-        minutes = parseInt(diff / 60, 10); // Converte o tempo decorrido em minutos
-        seconds = parseInt(diff % 60, 10); // Calcula os segundos restantes
-
+        const diff = Math.floor((Date.now() - start) / 1000); // Calcula o tempo decorrido em segundos
+        let minutes = Math.floor(diff / 60); // Converte o tempo decorrido em minutos
+        let seconds = diff % 60; // Calcula os segundos restantes
         // Formata os minutos e segundos para sempre exibir dois dígitos
         minutes = minutes < 10 ? '0' + minutes : minutes;
         seconds = seconds < 10 ? '0' + seconds : seconds;
-
         // Atualiza o display com o tempo decorrido
         display.textContent = minutes + ':' + seconds;
     }
-
     // Inicia o cronômetro e atualiza a cada segundo
     timerID = setInterval(timer, 1000);
 }
 
-
-// Variáveis para o movimento do jogador
-let targetX = player.x; 
-let targetY = player.y;
-let currentX = player.x;
-let currentY = player.y;
 /**
  * Função responsável por desenhar o labirinto.
  */
-let distanceFromPlayer;
 function drawMaze() {
     // Ajusta o tamanho das células com base no tamanho do labirinto e do canvas
     const rows = maze.length;
     const cols = maze[0].length;
     const cellSize = Math.min(canvas.width / cols, canvas.height / rows);
-
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpa o canvas
-
     // Loop para percorrer cada célula do labirinto e desenhá-la
     for (let i = 0; i < maze.length; i++) {
         for (let j = 0; j < maze[i].length; j++) {
@@ -116,34 +86,30 @@ function drawMaze() {
             let distanceX = Math.abs(targetX - j);
             let distanceY = Math.abs(targetY - i);
             distanceFromPlayer = Math.sqrt(distanceX ** 2 + distanceY ** 2);
-
             // Desenha as células dentro do alcance de visão do jogador
             if (distanceFromPlayer <= player.viewDistance) {
                 ctx.fillStyle = maze[i][j] === 1 ? wallColor :
-                                maze[i][j] === 2 ? questionBoxColor :
-                                maze[i][j] === 4 ? winBoxColor : pathColor;
-
+                    maze[i][j] === 2 ? questionBoxColor :
+                        maze[i][j] === 4 ? winBoxColor : pathColor;
                 ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize); // Desenha a célula
             } else if (distanceFromPlayer <= player.viewDistance + 1) {
                 // Transição suave com desfoque para as áreas fora de vista
-                const blurLevel = Math.min(8, 2 * (distanceFromPlayer - player.viewDistance));
-                //ctx.filter = `blur(${blurLevel}px)`;
+                Math.min(8, 2 * (distanceFromPlayer - player.viewDistance));
+                // ctx.filter = `blur(${blurLevel}px)`;
                 ctx.fillStyle = blurColor; // Cor da área borrada
                 ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
             } else {
                 // Área totalmente fora da visão
-                //ctx.filter = 'blur(12px)';
+                // ctx.filter = 'blur(12px)';
                 ctx.fillStyle = offViewColor; // Cor da área escura
                 ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
             }
             ctx.filter = 'none'; // Reset do filtro de desfoque para a próxima célula
         }
     }
-
     // Interpolação suave para o movimento do personagem (suaviza a transição de posições)
     currentX += (targetX - currentX) * transitionSpeed;
     currentY += (targetY - currentY) * transitionSpeed;
-
     // Desenha o personagem no labirinto
     ctx.fillStyle = playerColor;
     ctx.beginPath();
@@ -153,35 +119,33 @@ function drawMaze() {
         cellSize / 3, 0, 2 * Math.PI
     );
     ctx.fill();
-
     requestAnimationFrame(drawMaze); // Requisição para desenhar o labirinto continuamente
 }
 
 /**
  * Função que move o jogador pelas células do labirinto.
- * dx - Deslocamento horizontal (1 ou -1).
- * dy - Deslocamento vertical (1 ou -1).
+ * @param {number} dx - Deslocamento horizontal (1 ou -1).
+ * @param {number} dy - Deslocamento vertical (1 ou -1).
  */
 function movePlayer(dx, dy) {
     let newX = player.x + dx;
     let newY = player.y + dy;
     // Verifica se o movimento é válido (dentro dos limites do labirinto e sem colidir com uma parede)
     if (newX >= 0 &&
-    newY >= 0 &&
-    newX < maze[0].length &&
-    newY < maze.length &&
-    maze[newY][newX] !== 1 && // Não permite mover em paredes
-    player.released
+        newY >= 0 &&
+        newX < maze[0].length &&
+        newY < maze.length &&
+        maze[newY][newX] !== 1 && // Não permite mover em paredes
+        player.released
     ) {
+        // Atualiza a última posição de movimento do jogador
         player.oldX = -dx;
         player.oldY = -dy;
         targetX = newX;
         targetY = newY;
         player.x = newX;
         player.y = newY;
-
         checkIfWinOrQuestion(player.y, player.x); // Verifica vitória ou questão
-
         drawMaze(); // Redesenha o labirinto com o novo movimento
     }
 }
@@ -190,11 +154,15 @@ function movePlayer(dx, dy) {
 document.addEventListener('keydown', (event) => {
     switch (event.key) {
         case 'Enter':
-            if (document.getElementById('startMenu').style.display != 'none') startGame();
-            else if (document.getElementById('questionBox').style.display != 'none') {
-                checkAnswer(); 
+            if (document.getElementById('startMenu').style.display !== 'none') {
+                startGame();
+                break;
+            } else if (document.getElementById('questionBox').style.display !== 'none') {
+                checkAnswer();
+                break;
+            } else {
+                break;
             }
-            else break;
         case 'ArrowUp':
         case 'w':
             movePlayer(0, -1);
@@ -214,14 +182,12 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
-
 drawMaze(); // Chama a função para desenhar o labirinto inicial
 
-/** 
+/**
  * Expõe funções globais para uso em outros scripts
  */
 window.movePlayer = movePlayer;
 window.startGame = startGame;
 window.checkAnswer = checkAnswer;
 window.giveUpQuestion = giveUpQuestion;
-/* ------- *///* ------- */

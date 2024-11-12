@@ -29,7 +29,7 @@
     <!-- Menu Inicial -->
     <div id="startMenu">
         <h2>Bem-vindo ao Labirinto Geométrico do IFMS</h2>
-        <p>Insira seu nome para começar:</p>
+        <label for="playerName">Insira seu nome para começar:</label>
         <input type="text" id="playerName" placeholder="Digite seu nome">
         <button onclick="startGame()">Jogar</button>
     </div>
@@ -37,7 +37,7 @@
     <canvas id="mazeCanvas" width="640" height="640"></canvas>
 
     <div id="questionBox" class="justify-content-center">
-        <p id="questionText"></p>
+        <label for="answerInput" id="questionText"></label>
         <input type="text" id="answerInput" placeholder="Sua resposta">
         <button onclick="checkAnswer()">Enviar</button>
         <a href="#" onclick="giveUpQuestion(); return false;">Desistir</a>
@@ -65,6 +65,7 @@
         </div>
     </div>
 
+    <script type="module" src="js/vars.js"></script>
     <script type="module" src="js/helperFunctions.js"></script>
     <script type="module" src="js/consts.js"></script>
     <script type="module" src="js/main.js"></script>
