@@ -8,8 +8,9 @@
  * Luiza Mabel - Designer das regras e panfletagem
  * Maria Clara - Fez e analisou todas as questões e respostas das questões
  */
-import { movePlayer, setPlayerRelease, player, drawMaze, maze, timerID } from "./main.js";
+import { movePlayer, setPlayerRelease, drawMaze, maze, timerID } from "./main.js";
 import { questions } from "./consts.js";
+import { player } from "./vars.js";
 
 let currentQuestionIndex = null;
 

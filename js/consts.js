@@ -8,14 +8,7 @@
  * Luiza Mabel - Designer das regras e panfletagem
  * Maria Clara - Fez e analisou todas as questões e respostas das questões
  */
-export let player = { 
-    x: 15, y: 13, 
-    oldX: 0, oldY: 0, 
-    name: '', 
-    released: false,
-    viewDistance: 3,
-    marginError: 0.5
-}; 
+
 /**
  * Constante da geração do mapa
  * 0 = caminho livre,

@@ -1,3 +1,13 @@
+
+export let player = {
+    x: 15, y: 13,
+    oldX: 0, oldY: 0,
+    name: '',
+    released: false,
+    viewDistance: 3,
+    marginError: 0.5
+};
+
 /**
  * Uma referência ao elemento canvas do HTML com o ID 'mazeCanvas'.
  * Este elemento é usado para renderizar o labirinto.
@@ -139,14 +149,6 @@ export let currentX = player.x;
  */
 export let currentY = player.y;
 
-/**
- * Representa a distância do jogador a um ponto específico no mundo do jogo.
- * Este valor é tipicamente usado para determinar o alcance das interações do jogador,
- * disparar eventos ou calcular distâncias para mecânicas de jogo.
- *
- * @type {number}
- */
-export let distanceFromPlayer;
 
 window.targetX = targetX;
 window.targetY = targetY;

@@ -10,11 +10,11 @@
  */
 
 /* Importações de constantes e funções auxiliares */
-import { player, maze } from './consts.js';
+import { maze } from './consts.js';
 import { checkIfWinOrQuestion, checkAnswer, giveUpQuestion } from './helperFunctions.js';
 import {
-    canvas, ctx, transitionSpeed, pathColor, offViewColor, blurColor, wallColor,
-    questionBoxColor, winBoxColor, playerColor, timerID, targetX, targetY, currentX, currentY, distanceFromPlayer
+    player, canvas, ctx, transitionSpeed, pathColor, offViewColor, blurColor, wallColor,
+    questionBoxColor, winBoxColor, playerColor, timerID, targetX, targetY, currentX, currentY
 } from './vars.js';
 
 /**
@@ -22,7 +22,7 @@ import {
  */
 export function setPlayerRelease(released) {
     released ? player.released = true : player.released = false;
-} export { movePlayer, player, drawMaze, maze, timerID };
+} export { movePlayer, player, drawMaze, maze, timerID, startGame };
 
 
 // Carregamento da página inicial
@@ -78,6 +78,7 @@ function drawMaze() {
     const rows = maze.length;
     const cols = maze[0].length;
     const cellSize = Math.min(canvas.width / cols, canvas.height / rows);
+    let distanceFromPlayer;
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpa o canvas
     // Loop para percorrer cada célula do labirinto e desenhá-la
     for (let i = 0; i < maze.length; i++) {
